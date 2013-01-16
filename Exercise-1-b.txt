@@ -1,0 +1,39 @@
+CREATE TABLE tastes(name varchar(30), fillings varchar(30));
+CREATE UNIQUE INDEX index_tastes_name_and_fillings ON tastes (name, fillings);
+
+insert into tastes (name, fillings) VALUES('Brown', 'Turkey');
+insert into tastes (name, fillings) VALUES('Brown', 'Beef');
+insert into tastes (name, fillings) VALUES('Brown', 'Ham');
+insert into tastes (name, fillings) VALUES('Jones', 'Cheese');
+insert into tastes (name, fillings) VALUES('Green', 'Beef');
+insert into tastes (name, fillings) VALUES('Green', 'Turkey');
+insert into tastes (name, fillings) VALUES('Green', 'Cheese');
+
+
+
+CREATE TABLE locations (lname varchar(50) PRIMARY KEY, phone varchar(20), address varchar(100));
+
+insert into locations (lname, phone, address) VALUES('Lincoln', '683 4523', 'Lincoln Place');
+insert into locations (lname, phone, address) VALUES("O'Neill's", '674 2134 ', 'Pearse St ');
+insert into locations (lname, phone, address) VALUES('Old Nag', '767 8132', 'Dame St');
+insert into locations (lname, phone, address) VALUES('Buttery', '702 3421', 'College St');
+
+
+
+CREATE TABLE sandwiches (location varchar(50), bread varchar(30), filling varchar(20), price DECIMAL(5,2), FOREIGN KEY (location) REFERENCES locations(lname));
+ALTER TABLE sandwiches ADD INDEX sandwiches_location (location);
+
+insert into sandwiches (location, bread, filling, price) VALUES('Lincoln', 'Rye', 'Ham', 1.25 );
+insert into sandwiches (location, bread, filling, price) VALUES("O'Neill's", 'White', 'Cheese', 1.20 );
+insert into sandwiches (location, bread, filling, price) VALUES("O'Neill's", 'Whole', 'Ham', 1.25 );
+insert into sandwiches (location, bread, filling, price) VALUES('Old Nag', 'Rye', 'Beef', 1.35 );
+insert into sandwiches (location, bread, filling, price) VALUES('Buttery', 'White', 'Cheese', 1.00 );
+insert into sandwiches (location, bread, filling, price) VALUES("O'Neill's", 'White', 'Turkey', 1.35 );
+insert into sandwiches (location, bread, filling, price) VALUES('Buttery', 'White', 'Ham', 1.10 );
+insert into sandwiches (location, bread, filling, price) VALUES('Lincoln', 'Rye', 'Beef', 1.35 );
+insert into sandwiches (location, bread, filling, price) VALUES('Lincoln', 'White', 'Ham', 1.30 );
+insert into sandwiches (location, bread, filling, price) VALUES('Old Nag ', 'Rye', 'Ham', 1.40 );
+
+select distinct location from sandwiches where filling in (select fillings from tastes where name="Jones");
+select distinct location from sandwiches inner join tastes on tastes.fillings=sandwiches.filling where tastes.name="Jones";
+select location, count(distinct name) from sandwiches join tastes where tastes.fillings=sandwiches.filling group by location;

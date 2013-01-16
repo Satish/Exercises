@@ -1,0 +1,32 @@
+CREATE TABLE branch(bcode varchar(50) PRIMARY KEY, librarian varchar(50), address varchar(255));
+
+insert into branch (bcode, librarian, address) VALUES('B1', '2 Anglesea Rd', 'John Smith');
+insert into branch (bcode, librarian, address) VALUES('B2', 'Mary Jones', '34 Pearse St');
+insert into branch (bcode, librarian, address) VALUES('B3', 'Francis Owens', 'Grange X');
+
+
+CREATE TABLE titles (title varchar(60) PRIMARY KEY, author varchar(50), publisher varchar(30));
+
+insert into titles (title, author, publisher) VALUES('Susannah', 'Ann Brown', 'Macmillan');
+insert into titles (title, author, publisher) VALUES('How to Fish', 'Amy Fly', 'Stop Press');
+insert into titles (title, author, publisher) VALUES('A History of Dublin', 'David Little', 'Wiley');
+insert into titles (title, author, publisher) VALUES('Computers', 'Blaise Pascal', 'Applewoods');
+insert into titles (title, author, publisher) VALUES('The Wife', 'Ann Brown', 'Macmillan');
+
+CREATE TABLE holdings (branch varchar(50), title varchar(60), copies int, PRIMARY KEY(branch,title), FOREIGN KEY (branch) REFERENCES branch(bcode), FOREIGN KEY (title) REFERENCES titles(title));
+
+insert into holdings (title, branch, copies) VALUES('Susannah', 'B1', 3);
+insert into holdings (title, branch, copies) VALUES('How To Fish', 'B1', 2);
+insert into holdings (title, branch, copies) VALUES('A History of Dublin', 'B1', 1);
+insert into holdings (title, branch, copies) VALUES('How To Fish', 'B2', 4);
+insert into holdings (title, branch, copies) VALUES('Computers', 'B2', 2);
+insert into holdings (title, branch, copies) VALUES('The Wife', 'B2', 3);
+insert into holdings (title, branch, copies) VALUES('A History of Dublin', 'B3', 1);
+insert into holdings (title, branch, copies) VALUES('Computers', 'B3', 4);
+insert into holdings (title, branch, copies) VALUES('Susannah', 'B3', 3);
+insert into holdings (title, branch, copies) VALUES('The Wife', 'B3', 1);
+
+SELECT title from titles where publisher='Macmillan';
+SELECT * from branch where branch.bcode IN (select holdings.branch from holdings where holdings.title IN (select titles.title from titles where titles.author='Ann Brown'));
+SELECT DISTINCT * from branch join holdings on holdings.branch=branch.bcode join titles on titles.title=holdings.title where titles.author='Ann Brown';
+SELECT branch.*, sum(copies)  from holdings join branch on holdings.branch=branch.bcode group by branch;

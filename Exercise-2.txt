@@ -1,0 +1,13 @@
+CREATE database vtapp;
+
+# With Password 'mypass'
+CREATE USER 'vtapp_user'@'localhost' IDENTIFIED BY 'mypass';
+
+# Without Password
+CREATE USER 'vtapp_user'@'localhost';
+
+GRANT SELECT ON vtapp.* TO 'vtapp_user'@'localhost';
+
+OR
+
+GRANT all privileges on vtapp.* to vtapp_user@localhost ;
