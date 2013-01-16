@@ -1,0 +1,5 @@
+# mysql dump
+mysqldump -uroot exercises > Exercise-4.sql
+
+# restore mysql dump
+mysql -uroot restored < Exercise-4.sql
