@@ -1,0 +1,53 @@
+CREATE TABLE categories (name varchar(100) PRIMARY KEY);
+
+INSERT INTO categories (name) VALUES('Category One');
+INSERT INTO categories (name) VALUES('Category Two');
+INSERT INTO categories (name) VALUES('Category Three');
+INSERT INTO categories (name) VALUES('Category Four');
+INSERT INTO categories (name) VALUES('Category Five');
+
+
+CREATE TABLE users (name varchar(100) PRIMARY KEY, type varchar(6));
+
+INSERT INTO users (name, type) VALUES('User One', 'normal');
+INSERT INTO users (name, type) VALUES('User Two', 'normal');
+INSERT INTO users (name, type) VALUES('Admin One', 'admin');
+INSERT INTO users (name, type) VALUES('Admin Two', 'admin');
+INSERT INTO users (name, type) VALUES('User Three', 'normal');
+
+
+CREATE TABLE articles (title varchar(255) PRIMARY KEY, category varchar(100), user varchar(100), FOREIGN KEY (category) REFERENCES categories(name), FOREIGN KEY (user) REFERENCES users(name) );
+
+CREATE INDEX index_articles_category ON articles (category);
+CREATE INDEX index_articles_user ON articles (user);
+
+INSERT INTO articles (title, category, user) VALUES('First Test Article By User One', 'Category One', 'User One');
+INSERT INTO articles (title, category, user) VALUES('Second Test Article By User One', 'Category One', 'User One');
+INSERT INTO articles (title, category, user) VALUES('First Test Article By User three', 'Category Five', 'User Three');
+INSERT INTO articles (title, category, user) VALUES('First Test Article By User Two', 'Category Three', 'User Two');
+INSERT INTO articles (title, category, user) VALUES('Third Test Article By User One', 'Category Four', 'User One');
+INSERT INTO articles (title, category, user) VALUES('Second Test Article By User Two', 'Category One', 'User Two');
+INSERT INTO articles (title, category, user) VALUES('Second Test Article By User three', 'Category Five', 'User Three');
+INSERT INTO articles (title, category, user) VALUES('Third Test Article By User Two', 'Category Three', 'User Two');
+INSERT INTO articles (title, category, user) VALUES('Second Test Article By User three', 'Category Five', 'User Three');
+INSERT INTO articles (title, category, user) VALUES('Third Test Article By User three', 'Category Two', 'User Three');
+
+
+CREATE TABLE comments (description varchar(500), article varchar(255), user varchar(100), FOREIGN KEY (article) REFERENCES articles(title), FOREIGN KEY (user) REFERENCES users(name));
+
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on First Article By User One', 'First Test Article By User One', 'User One');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on First Article By User two', 'First Test Article By User One', 'User Two');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on Second Article By User One', 'Second Test Article By User One', 'User One');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on Second Test Article By User One', 'Second Test Article By User Two', 'User One');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on Second Test Article By User Three', 'Second Test Article By User Three', 'User Three');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on First Article  By User Two', 'First Test Article By User Two', 'User Three');
+INSERT INTO comments (description, article, user) VALUES('Second Test Comment on Article One By User two', 'First Test Article By User One', 'User Two');
+INSERT INTO comments (description, article, user) VALUES('Second Test Comment on Article Two By User One', 'Second Test Article By User One', 'User One');
+INSERT INTO comments (description, article, user) VALUES('Second Test Comment on Second Article By User One', 'Second Test Article By User Two', 'User One');
+INSERT INTO comments (description, article, user) VALUES('First Test Comment on Third Article By User Three', 'Third Test Article By User Two', 'User Three');
+INSERT INTO comments (description, article, user) VALUES('Second Test Comment on Second Test Article By User two', 'Second Test Article By User three', 'User Two');
+
+
+SELECT title from articles where user='User Three'
+
+SELECT articles.title as article, articles.user as author, comments.description as comment FROM articles LEFT JOIN comments ON articles.title=comments.article WHERE articles.user = 'User Three'
