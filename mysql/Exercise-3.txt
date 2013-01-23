@@ -48,6 +48,28 @@ INSERT INTO comments (description, article, user) VALUES('First Test Comment on 
 INSERT INTO comments (description, article, user) VALUES('Second Test Comment on Second Test Article By User two', 'Second Test Article By User three', 'User Two');
 
 
-SELECT title from articles where user='User Three'
 
-SELECT articles.title as article, articles.user as author, comments.description as comment FROM articles LEFT JOIN comments ON articles.title=comments.article WHERE articles.user = 'User Three'
+1. select all articles whose author is user3.
+
+SELECT * from articles where user='User Three'
+
+
+2. For all the articles being selected above, select all the articles and also the comments associated with those articles in a single query
+
+SELECT articles.*, comments.description FROM articles LEFT JOIN comments ON articles.title=comments.article WHERE articles.user = 'User Three'
+
+
+
+3. Write a query to select all articles which do not have any comments
+
+SELECT articles.*, comments.description as comment_desc FROM comments RIGHT JOIN articles on comments.article = articles.title WHERE comments.description IS NULL
+
+
+4. Write a query to select article which has maximum comments
+
+SELECT articles.*, count(*) FROM comments JOIN articles on articles.title = comments.article GROUP BY article ORDER BY count(*) DESC LIMIT 1
+
+
+
+5. Write a query to select article which does not have more than one comment by the same user ( do this using left join and also do it using group by )
+
