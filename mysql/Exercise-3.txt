@@ -59,7 +59,6 @@ SELECT * from articles where user='User Three'
 SELECT articles.*, comments.description FROM articles LEFT JOIN comments ON articles.title=comments.article WHERE articles.user = 'User Three'
 
 
-
 3. Write a query to select all articles which do not have any comments
 
 SELECT articles.*, comments.description as comment_desc FROM comments RIGHT JOIN articles on comments.article = articles.title WHERE comments.description IS NULL
@@ -70,6 +69,8 @@ SELECT articles.*, comments.description as comment_desc FROM comments RIGHT JOIN
 SELECT articles.*, count(*) FROM comments JOIN articles on articles.title = comments.article GROUP BY article ORDER BY count(*) DESC LIMIT 1
 
 
-
 5. Write a query to select article which does not have more than one comment by the same user ( do this using left join and also do it using group by )
 
+SELECT * from articles where articles.title NOT IN (SELECT article FROM comments GROUP BY article, user HAVING count(description)>1);
+
+SELECT * FROM articles LEFT JOIN (SELECT article FROM comments GROUP BY article, user HAVING count(description)>1) ct1 ON ct1.article = articles.title WHERE article IS NULL
