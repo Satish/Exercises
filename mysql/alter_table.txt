@@ -2,7 +2,7 @@ CREATE TABLE testing_table (name varchar(100), contact_name varchar(50), roll_no
 
 ALTER TABLE testing_table DROP name;
 
-ALTER TABLE testing_table CHANGE contact_name username;
+ALTER TABLE testing_table CHANGE contact_name username varchar(50);
 
 ALTER TABLE testing_table ADD first_name varchar(30);
 ALTER TABLE testing_table ADD last_name varchar(30);
