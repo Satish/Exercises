@@ -66,7 +66,11 @@ SELECT articles.*, comments.description as comment_desc FROM comments RIGHT JOIN
 
 4. Write a query to select article which has maximum comments
 
-SELECT articles.*, count(*) FROM comments JOIN articles on articles.title = comments.article GROUP BY article ORDER BY count(*) DESC LIMIT 1
+#SELECT articles.*, count(*) FROM comments JOIN articles on articles.title = comments.article GROUP BY article ORDER BY count(*) DESC LIMIT 1
+
+SELECT tt1.* from (SELECT articles.*, count(*) as comments_count FROM comments JOIN articles on articles.title = comments.article GROUP BY article) as tt1
+JOIN (SELECT count(*) as comments_count FROM comments JOIN articles on articles.title = comments.article GROUP BY article ORDER BY count(*) DESC LIMIT 1) as tt2
+ON tt1.comments_count = tt2.comments_count
 
 
 5. Write a query to select article which does not have more than one comment by the same user ( do this using left join and also do it using group by )
