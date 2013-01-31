@@ -1,0 +1,122 @@
+CREATE TABLE employees(
+  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name varchar(100)
+);
+
+
+CREATE TABLE assets(
+  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name varchar(100),
+  model varchar(100),
+  make varchar(100),
+  price decimal(10,2),
+  warranty int(11),
+  purchased_on date,
+  alloted tinyint(1) DEFAULT 0,
+  location varchar(100)
+);
+
+CREATE TABLE assets_employees(
+  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  employee_id int(11),
+  asset_id int(11),
+  repair_cost decimal(10,2),
+  repair_type varchar(225),
+  repaired_on date,
+  warranty tinyint(1) DEFAULT 1
+  FOREIGN KEY (asset_id) REFERENCES assets(id)
+);
+
+CREATE TABLE assets_repair(
+  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  asset_id int(11),
+  assigned_on date,
+  returned_on date,
+  FOREIGN KEY (employee_id) REFERENCES employees(id),
+  FOREIGN KEY (asset_id) REFERENCES assets(id)
+);
+
+CREATE INDEX index_assets_employees_on_asset_id ON assets_employees (asset_id);
+CREATE INDEX index_assets_employees_on_employee_id ON assets_employees (employee_id);
+CREATE INDEX index_assets_employees_on_asset_id_and_employee_id ON assets_employees (asset_id, employee_id);
+
+INSERT INTO employees (name) VALUES('Alice');
+INSERT INTO employees (name) VALUES('Bob');
+INSERT INTO employees (name) VALUES('Chris');
+INSERT INTO employees (name) VALUES('Duke');
+INSERT INTO employees (name) VALUES('Emily');
+
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES('Laptop A', 'Dell', 'Inspiron 13', 400000, 12, '2011-01-01', 1, 'private');
+INSERT INTO assets_employees (employee_id, asset_id, assigned_on, returned_on) VALUES(1, 1, '2011-01-01', '2011-12-31');
+INSERT INTO assets_employees (employee_id, asset_id, assigned_on) VALUES(2, 1, '2012-01-01');
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES('Laptop B', 'Dell', 'Inspiron 15', 500000, 12, '2011-01-01', 1, 'private');
+INSERT INTO assets_employees (employee_id, asset_id, assigned_on, returned_on) VALUES(2, 2, '2011-01-01', '2011-12-31');
+
+UPDATE assets SET alloted=0 AND location="Asset Manager's cupboard" WHERE id=2;
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES
+('Laptop N1', 'Dell', 'Ultrabook', 600000, 12, '2011-01-01', 0, "Asset Manager's cupboard"),
+('Laptop N2', 'Dell', 'Ultrabook', 600000, 12, '2011-01-01', 0, "Asset Manager's cupboard");
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES
+('iPhone A', 'Apple', 'iPhone 4', 45000, 12, '2011-01-01', 0, "Asset Manager's cupboard"),
+('iPhone B', 'Apple', 'iPhone 4', 45000, 12, '2011-01-01', 0, "Asset Manager's cupboard");
+
+INSERT INTO assets_employees (employee_id, asset_id, assigned_on) VALUES
+(1, 5, '2011-04-11'),
+(2, 6, '2011-01-01');
+
+UPDATE assets SET alloted=1 AND location="private" WHERE id IN (5, 6);
+
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES
+('Projector A', 'Sony', 'PS300', 45000, 12, '2011-09-15', 1, "Meeting Room"),
+('Printer A', 'HP', 'H-500', 20000, 12, '2011-09-15', 1, "Meeting Room");
+
+INSERT INTO assets (name, make, model, price, warranty, purchased_on, alloted, location) VALUES
+('Printer B', 'HP', 'H-800', 15000, 12, '2011-09-15', 0, "Asset Manager's cupboard");
+
+
+---------------------------------------------------------------------------------------------------
+
+1. Find the name of the employee who has been alloted the maximum number of assets till date
+
+SELECT tt1.* from (SELECT employees.*, count(*) as assets_count FROM employees LEFT JOIN assets_employees on assets_employees.employee_id = employees.id GROUP BY employees.id ) as tt1
+JOIN (SELECT employees.*, count(*) as assets_count FROM employees LEFT JOIN assets_employees on assets_employees.employee_id = employees.id GROUP BY employees.id ORDER BY assets_count DESC LIMIT 1) as tt2
+ON tt1.assets_count = tt2.assets_count
+
+
+2. Identify the name of the employee who currently has the maximum number of assets as of today
+
+SELECT employees.name, count(*) as assets_count FROM employees RIGHT JOIN assets_employees on assets_employees.employee_id = employees.id WHERE returned_on IS NULL GROUP BY employees.id ORDER BY assets_count DESC LIMIT 1
+
+
+3. Find name and period of all the employees who have used a Laptop - let’s say laptop A - since it was bought by the company.
+
+SELECT name, assigned_on, returned_on, datediff(returned_on, assigned_on) as timeperiod_in_days FROM employees inner join assets_employees
+ON employees.id=assets_employees.employee_id
+where assets_employees.asset_id = (select id from assets where name="Laptop A");
+
+
+4. Find the list of assets that are currently not assigned to anyone hence lying with the asset manage ( HR)
+
+SELECT * from assets where alloted=0
+
+
+5. An employee say Bob is leaving the company, write a query to get the list of assets he should be returning to the company.
+
+SELECT assets.*, assets_employees.employee_id FROM assets LEFT JOIN assets_employees on assets_employees.asset_id = assets.id where assets_employees.employee_id=
+(SELECT id from employees where name='Bob' LIMIT 1)
+
+6. Write a query to find assets which are out of warranty
+
+#Assuming warranty entered is in months
+
+SELECT assets.* FROM assets where DATEDIFF(curdate(), purchased_on) < (365*warranty/12);
+
+
+7. Return a list of Employee Names who do not have any asset assigned to them.
+
+SELECT * FROM employees where id NOT IN (select employee_id from assets_employees where returned_on IS NULL)
