@@ -1,0 +1,28 @@
+CREATE TABLE email_subscriptions( email varchar(100), phone varchar(15), city varchar(50) );
+
+LOAD DATA INFILE '/Users/Satish/Work/Exercises/mysql/email_subscribers.csv' INTO TABLE email_subscriptions FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+
+1. What all cities did people respond from
+
+SELECT distinct city FROM email_subscriptions;
+
+
+2. How many people responded from each city
+
+SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city;
+
+
+3. Which city were the maximum respondents from?
+
+SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city ORDER BY email_subscriptions_count DESC limit 1;
+
+
+4. What all email domains did people respond from?
+
+SELECT DISTINCT substring_index(email,'@',-1) AS domain_name FROM email_subscriptions;
+
+
+5. Which is the most popular email domain among the respondents?
+
+SELECT DISTINCT substring_index(email,'@',-1) AS domain_name, count(*) AS email_subscriptions_count FROM email_subscriptions GROUP BY domain_name ORDER BY email_subscriptions_count DESC LIMIT 1;
