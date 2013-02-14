@@ -15,7 +15,11 @@ SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROU
 
 3. Which city were the maximum respondents from?
 
-SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city ORDER BY email_subscriptions_count DESC limit 1;
+#SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city ORDER BY email_subscriptions_count DESC limit 1;
+
+SELECT est1.* from (SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city ORDER BY email_subscriptions_count DESC) as est1
+JOIN (SELECT city, count(*) as email_subscriptions_count FROM email_subscriptions GROUP BY city ORDER BY email_subscriptions_count DESC LIMIT 1) as est2
+ON est1.email_subscriptions_count = est2.email_subscriptions_count;
 
 
 4. What all email domains did people respond from?
@@ -25,4 +29,8 @@ SELECT DISTINCT substring_index(email,'@',-1) AS domain_name FROM email_subscrip
 
 5. Which is the most popular email domain among the respondents?
 
-SELECT DISTINCT substring_index(email,'@',-1) AS domain_name, count(*) AS email_subscriptions_count FROM email_subscriptions GROUP BY domain_name ORDER BY email_subscriptions_count DESC LIMIT 1;
+# SELECT DISTINCT substring_index(email,'@',-1) AS domain_name, count(*) AS email_subscriptions_count FROM email_subscriptions GROUP BY domain_name ORDER BY email_subscriptions_count DESC LIMIT 1;
+
+SELECT est1.* FROM (SELECT DISTINCT substring_index(email,'@',-1) AS domain_name, count(*) AS email_subscriptions_count FROM email_subscriptions GROUP BY domain_name ORDER BY email_subscriptions_count DESC) as est1
+JOIN (SELECT DISTINCT substring_index(email,'@',-1) AS domain_name, count(*) AS email_subscriptions_count FROM email_subscriptions GROUP BY domain_name ORDER BY email_subscriptions_count DESC LIMIT 1) as est2
+ON est1.email_subscriptions_count = est2.email_subscriptions_count;
