@@ -90,7 +90,11 @@ ON tt1.assets_count = tt2.assets_count
 
 2. Identify the name of the employee who currently has the maximum number of assets as of today
 
-SELECT employees.name, count(*) as assets_count FROM employees RIGHT JOIN assets_employees on assets_employees.employee_id = employees.id WHERE returned_on IS NULL GROUP BY employees.id ORDER BY assets_count DESC LIMIT 1
+#SELECT employees.name, count(*) as assets_count FROM employees RIGHT JOIN assets_employees on assets_employees.employee_id = employees.id WHERE returned_on IS NULL GROUP BY employees.id ORDER BY assets_count DESC LIMIT 1
+
+SELECT tt1.* from (SELECT employees.name, count(*) as assets_count FROM employees RIGHT JOIN assets_employees on assets_employees.employee_id = employees.id WHERE returned_on IS NULL GROUP BY employees.id ORDER BY assets_count DESC) as tt1
+JOIN (SELECT employees.name, count(*) as assets_count FROM employees RIGHT JOIN assets_employees on assets_employees.employee_id = employees.id WHERE returned_on IS NULL GROUP BY employees.id ORDER BY assets_count DESC LIMIT 1) as tt2
+ON tt1.assets_count = tt2.assets_count
 
 
 3. Find name and period of all the employees who have used a Laptop - let’s say laptop A - since it was bought by the company.
