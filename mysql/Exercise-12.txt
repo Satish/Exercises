@@ -1,0 +1,66 @@
+CREATE TABLE orders(
+  orderNumber VARCHAR(30) PRIMARY KEY NOT NULL,
+  orderDate DATETIME,
+  requiredDate DATETIME,
+  shippedDate DATETIME,
+  status TINYINT(1) DEFAULT 0,
+  comment VARCHAR(200),
+  customerNumber VARCHAR(30)
+);
+
+CREATE TABLE order_details (
+  orderNumber VARCHAR(30) PRIMARY KEY NOT NULL,
+  quantityOrdered INT,
+  requiredDate datetime,
+  priceEach FLOAT NOT NULL DEFAULT 0,
+  orderLineNumber VARCHAR(30),
+  FOREIGN KEY (orderNumber) REFERENCES orders(orderNumber)
+);
+
+
+
+INSERT INTO orders VALUES ('VO1', DATE_ADD(NOW(),INTERVAL -5 DAY), DATE_ADD(NOW(),INTERVAL 5 DAY),  DATE_ADD(NOW(),INTERVAL -1 DAY), 1, '', 'VC01' );
+INSERT INTO orders VALUES ('VO2', DATE_ADD(NOW(),INTERVAL -5 DAY), DATE_ADD(NOW(),INTERVAL 5 DAY),  DATE_ADD(NOW(),INTERVAL -2 DAY), 1, '', 'VC02' );
+INSERT INTO orders VALUES ('VO3', DATE_ADD(NOW(),INTERVAL -2 DAY), DATE_ADD(NOW(),INTERVAL 8 DAY),  NOW(), 1, '', 'VC03' );
+INSERT INTO orders VALUES ('VO4', DATE_ADD(NOW(),INTERVAL -1 DAY), DATE_ADD(NOW(),INTERVAL 9 DAY),  '', 1, '', 'VC04' );
+INSERT INTO orders VALUES ('VO5', DATE_ADD(NOW(),INTERVAL -1 DAY), DATE_ADD(NOW(),INTERVAL 9 DAY),  NOW(), 1, '', 'VC05' );
+INSERT INTO orders VALUES ('VO6', DATE_ADD(NOW(),INTERVAL -10 HOUR), DATE_ADD(NOW(),INTERVAL 10 DAY),  '', 1, 'Test Comment', 'VC06' );
+INSERT INTO orders VALUES ('VO7', DATE_ADD(NOW(),INTERVAL -5 HOUR), DATE_ADD(NOW(),INTERVAL 10 DAY),  NOW(), 1, '', 'VC07' );
+INSERT INTO orders VALUES ('VO8', DATE_ADD(NOW(),INTERVAL -4 HOUR), DATE_ADD(NOW(),INTERVAL 10 DAY),  NOW(), 1, '', 'VC08' );
+
+INSERT INTO order_details VALUES ('VO1', 20, DATE_ADD(NOW(),INTERVAL 5 DAY), 1500, 'VOLN1' );
+INSERT INTO order_details VALUES ('VO2', 10, DATE_ADD(NOW(),INTERVAL 5 DAY),  1200, 'VOLN2' );
+INSERT INTO order_details VALUES ('VO3', 5, DATE_ADD(NOW(),INTERVAL 8 DAY),  3000, 'VOLN3' );
+INSERT INTO order_details VALUES ('VO4', 15, DATE_ADD(NOW(),INTERVAL 9 DAY), 2000, 'VOLN4' );
+INSERT INTO order_details VALUES ('VO5', 25, DATE_ADD(NOW(),INTERVAL 9 DAY), 100, 'VOLN5' );
+INSERT INTO order_details VALUES ('VO6', 10, DATE_ADD(NOW(),INTERVAL 10 DAY), 40, 'VOLN6' );
+INSERT INTO order_details VALUES ('VO7',  8, DATE_ADD(NOW(),INTERVAL 10 DAY),  5000, 'VOLN7' );
+INSERT INTO order_details VALUES ('VO8',  700, DATE_ADD(NOW(),INTERVAL 10 DAY),  1000, 'VOLN8' );
+
+
+
+a) Get all orders, number of items sold and total values in each order
+
+SELECT orders.orderNumber, quantityOrdered, (quantityOrdered*priceEach) as order_total from orders JOIN order_details on orders.orderNumber = order_details.orderNumber
+
+OR
+
+SELECT orders.orderNumber, SUM(quantityOrdered), SUM(quantityOrdered*priceEach) as order_total from orders
+JOIN order_details on orders.orderNumber = order_details.orderNumber
+GROUP BY orders.orderNumber
+
+
+
+b) what order has total value greater than $1000
+
+SELECT orders.orderNumber, quantityOrdered, (quantityOrdered*priceEach) as order_total from orders
+JOIN order_details on orders.orderNumber = order_details.orderNumber
+HAVING order_total > 1000
+
+
+
+c)what order has total value greater than $1000 and has more than 600 items in it
+
+SELECT orders.orderNumber, quantityOrdered, (quantityOrdered*priceEach) as order_total from orders
+JOIN order_details on orders.orderNumber = order_details.orderNumber
+HAVING order_total > 10000 AND quantityOrdered > 600
