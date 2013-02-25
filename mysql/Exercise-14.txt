@@ -1,0 +1,17 @@
+CREATE TABLE tags(
+  post_id INT,
+  tag_id INT
+);
+
+
+INSERT INTO tags VALUES(1, 2);
+INSERT INTO tags VALUES(1, 3);
+INSERT INTO tags VALUES(1, 1);
+INSERT INTO tags VALUES(2, 1);
+INSERT INTO tags VALUES(2, 2);
+INSERT INTO tags VALUES(2, 3);
+
+
+1. Write a query to select post_ids that have both 1 and 3 as tag_ids
+
+SELECT post_id from tags where tags.tag_id IN (1,3)
