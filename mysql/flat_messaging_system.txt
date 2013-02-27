@@ -1,0 +1,30 @@
+CREATE TABLE users(
+  id INT PRIMARY KEY,
+  name VARCHAR(50),
+  password VARCHAR(50)
+);
+
+CREATE TABLE messages(
+  id INT PRIMARY KEY,
+  body VARCHAR(500),
+  user_id INT NOT NULL, 
+  parent_id INT,
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (parent_id) REFERENCES messages(id)
+);
+
+CREATE TABLE messages_users(
+  id INT PRIMARY KEY,
+  user_id INT NOT NULL,
+  message_id INT NOT NULL,
+  read_status TINYINT(1) NOT NULL DEFAULT 0,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (message_id) REFERENCES messages(id)
+);
+
+
+# user has many sent messsages via messages.user_id
+# user has many inbox messsages via messages_users.user_id
+# message has many replies via messages.parent_id
+# message read status via messages_users.read_status
